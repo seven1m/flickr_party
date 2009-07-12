@@ -13,6 +13,8 @@ class Flickr
   
   attr_accessor :token
   
+  THIRD_LEVEL_METHODS = %w(add browse search delete create find echo login null)
+  
   def initialize(api_key, secret, method=nil, token=nil)
     @api_key = api_key
     @secret = secret
@@ -21,7 +23,7 @@ class Flickr
   end
   
   def method_missing(method_name, args={}, test=nil)
-    if @method.to_s.count('.') == 1
+    if @method.to_s.count('.') == 2 or method_name =~ /[A-Z]/ or THIRD_LEVEL_METHODS.include?(method_name)
       args.merge!('api_key' => @api_key, 'method' => @method + '.' + method_name.to_s, 'format' => 'rest')
       if @token
         args.merge!('auth_token' => @token)
