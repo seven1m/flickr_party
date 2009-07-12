@@ -27,7 +27,7 @@ class Flickr
         args.merge!('auth_token' => @token)
       end
       args.merge!(:api_sig => MD5.hexdigest(@secret + args.to_a.sort.to_s))
-      self.class.get(ENDPOINT, :query => args)
+      self.class.post(ENDPOINT, :body => args)
     else
       if @method
         method = @method + '.' + method_name.to_s
