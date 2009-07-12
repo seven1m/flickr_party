@@ -24,6 +24,7 @@ class Flickr
   
   def method_missing(method_name, args={}, test=nil)
     if @method.to_s.count('.') == 2 or method_name =~ /[A-Z]/ or THIRD_LEVEL_METHODS.include?(method_name)
+      args = self.class.stringify_hash_keys(args)
       args.merge!('api_key' => @api_key, 'method' => @method + '.' + method_name.to_s, 'format' => 'rest')
       if @token
         args.merge!('auth_token' => @token)
@@ -60,6 +61,13 @@ class Flickr
       "http://farm#{photo_hash['farm']}.static.flickr.com/#{photo_hash['server']}/#{photo_hash['id']}_#{photo_hash['secret']}.jpg"
     else
       raise PhotoURLError, "Invalid size or missing keys in photo_hash. Valid sizes are m, s, t, b, o, and nil. For original (o) size, photo_hash must contain both 'originalsecret' and 'originalformat'."
+    end
+  end
+  
+  def self.stringify_hash_keys(hash)
+    hash.inject({}) do |options, (key, value)|
+      options[key.to_s] = value
+      options
     end
   end
   
