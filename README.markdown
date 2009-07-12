@@ -1,43 +1,38 @@
-Campaign Monitor API Wrapper
-============================
+Flickr API Wrapper
+==================
 
-Lightweight wrapper for Campaign Monitor API over HTTP
+Wrapper for the Flickr API, with real application authentication.
 
 About
 -----
 
-It's possibly exaggeration to call this a "library" since it's really
-only a class that utilizes HTTParty -- a wonderful gem for consuming REST
-APIs. The code here is only about 20 lines or so; HTTParty does all the
-hard work. Just thought I'd mention that.
+This piece of code uses HTTParty for its magic. All Flickr methods should
+be supported, but you'll still need to reference the Flickr API docs heavily
+and understand how they work.
+
+All method calls are automatically signed and include the authentication token.
 
 Installation
 ------------
 
-    sudo gem install seven1m-campaign_monitor -s http://gems.github.com
+    sudo gem install seven1m-flickr -s http://gems.github.com
     
 Usage
 -----
 
-First, familiarize yourself with the API documentation here: http://www.campaignmonitor.com/api/
-
     require 'rubygems'
-    require 'campaign_monitor'
+    require 'flickr'
     
     API_KEY = '...'
+    SECRETE = '...'
     
-    cm = CampaignMonitor.new(API_KEY)
+    f = Flickr.new(API_KEY, SECRET)
+    
+    # The code supports real application authentication.
+    f.auth_url # returns the url you should send the user to
+    f.complete_auth # once the user has authorized the app thru flickr
     
     # The wrapper uses method_missing to accept any method supported by the API (now or in the future).
-    # For instance, the method "Subscriber.Add" is called with the code below.
+    # For instance, the method "flickr.activity.userPhotos" is called with the code below.
     
-    cm.Subscriber.Add(
-      'ListID' => '...',
-      'Email'  => 'tim@timmorgan.org',
-      'Name'   => 'Tim Morgan'
-    )
-    
-    # 'ApiKey' is passed in automatically for each method call.
-    # Other arguments should be passed as a hash to the method.
-    
-    
+    f.flickr.activity.userPhotos('timeframe' => '10d')
