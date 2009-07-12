@@ -29,8 +29,16 @@ Usage
     f = Flickr.new(API_KEY, SECRET)
     
     # The code supports real application authentication.
-    f.auth_url # returns the url you should send the user to
-    f.complete_auth # once the user has authorized the app thru flickr
+    url = f.auth_url # returns the url you should send the user to
+    `open #{url}` # open in browser
+    
+    # This is just a way to pause until the user says go.
+    # If you're building a gui app or web-based app, you will obviously do something different.
+    print 'Press any key once you have authorized the app...'
+    require "highline/system_extensions"
+    HighLine::SystemExtensions.get_character
+    
+    f.complete_auth
     
     # The wrapper uses method_missing to accept any method supported by the API (now or in the future).
     # For instance, the method "flickr.activity.userPhotos" is called with the code below.
