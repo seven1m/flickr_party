@@ -44,7 +44,7 @@ class Flickr
   def auth_url(perms='read')
     @frob = self.flickr.auth.getFrob['rsp']['frob']
     sig = MD5.hexdigest("#{@secret}api_key#{@api_key}frob#{@frob}perms#{perms}")
-    puts "http://flickr.com/services/auth/?api_key=#{@api_key}&perms=#{perms}&frob=#{@frob}&api_sig=#{sig}"
+    "http://flickr.com/services/auth/?api_key=#{@api_key}&perms=#{perms}&frob=#{@frob}&api_sig=#{sig}"
   end
   
   def complete_auth
