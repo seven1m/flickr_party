@@ -2,7 +2,7 @@ require 'rubygems'
 require 'httparty'
 require 'md5'
 
-class Flickr
+class FlickrParty
 
   ENDPOINT = 'http://api.flickr.com/services/rest/'
   

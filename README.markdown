@@ -1,7 +1,7 @@
-Flickr API Wrapper
-==================
+Flickr Party
+============
 
-Wrapper for the Flickr API, with real application authentication.
+Wrapper for the Flickr API, with real application authentication, using HTTParty.
 
 About
 -----
@@ -15,18 +15,18 @@ All method calls are automatically signed and include the authentication token.
 Installation
 ------------
 
-    sudo gem install seven1m-flickr -s http://gems.github.com
+    sudo gem install flickr_party -s http://gemcutter.org
     
 Usage
 -----
 
     require 'rubygems'
-    require 'flickr'
+    require 'flickr_party'
     
     API_KEY = '...'
     SECRETE = '...'
     
-    f = Flickr.new(API_KEY, SECRET)
+    f = FlickrParty.new(API_KEY, SECRET)
     
     # The code supports real application authentication.
     url = f.auth_url # returns the url you should send the user to
