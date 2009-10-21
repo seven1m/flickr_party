@@ -23,7 +23,7 @@ class FlickrParty
   end
   
   def method_missing(method_name, args={}, test=nil)
-    if @method.to_s.count('.') == 2 or method_name =~ /[A-Z]/ or THIRD_LEVEL_METHODS.include?(method_name.to_s)
+    if @method.to_s.count('.') == 2 or method_name.to_s =~ /[A-Z]/ or THIRD_LEVEL_METHODS.include?(method_name.to_s)
       args = self.class.stringify_hash_keys(args)
       args.merge!('api_key' => @api_key, 'method' => @method + '.' + method_name.to_s, 'format' => 'rest')
       if @token
