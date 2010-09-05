@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'httparty'
-require 'md5'
+require 'digest/md5'
 
 class FlickrParty
 
@@ -25,11 +25,14 @@ class FlickrParty
   def method_missing(method_name, args={}, test=nil)
     if @method.to_s.count('.') == 2 or method_name.to_s =~ /[A-Z]/ or THIRD_LEVEL_METHODS.include?(method_name.to_s)
       args = self.class.stringify_hash_keys(args)
-      args.merge!('api_key' => @api_key, 'method' => @method + '.' + method_name.to_s, 'format' => 'rest')
+      args.merge!('api_key' => @api_key, 'method' => @method + '.' + method_name.to_s)
       if @token
         args.merge!('auth_token' => @token)
       end
-      args.merge!(:api_sig => MD5.hexdigest(@secret + args.to_a.sort.to_s))
+      args_to_s = ""
+      args.sort.each{|a| args_to_s += a[0].to_s + a[1].to_s }
+      sig = Digest::MD5.hexdigest(@secret.to_s + args_to_s)
+      args.merge!(:api_sig => sig)
       self.class.post(ENDPOINT, :body => args)
     else
       if @method
@@ -43,15 +46,16 @@ class FlickrParty
   
   def auth_url(perms='read')
     @frob = self.flickr.auth.getFrob['rsp']['frob']
-    sig = MD5.hexdigest("#{@secret}api_key#{@api_key}frob#{@frob}perms#{perms}")
+    sig = Digest::MD5.hexdigest("#{@secret}api_key#{@api_key}frob#{@frob}perms#{perms}")
     "http://flickr.com/services/auth/?api_key=#{@api_key}&perms=#{perms}&frob=#{@frob}&api_sig=#{sig}"
   end
   
-  def complete_auth
+  def complete_auth(frob='put_your_frob_here')
+    @frob ||= frob
     @auth = self.flickr.auth.getToken('frob' => @frob)['rsp']['auth']
     @token = @auth['token']
   end
-  
+
   def photo_url(photo_hash, size=nil)
     if %w(m s t b).include?(size)
       "http://farm#{photo_hash['farm']}.static.flickr.com/#{photo_hash['server']}/#{photo_hash['id']}_#{photo_hash['secret']}_#{size}.jpg"

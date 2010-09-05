@@ -24,7 +24,7 @@ Usage
     require 'flickr_party'
     
     API_KEY = '...'
-    SECRETE = '...'
+    SECRET = '...'
     
     f = FlickrParty.new(API_KEY, SECRET)
     
@@ -38,9 +38,12 @@ Usage
     require "highline/system_extensions"
     HighLine::SystemExtensions.get_character
     
-    f.complete_auth
+    # Get the frob from the previous url.
+    @frob = "my_super_awesome_frob"
+
+    @token = f.complete_auth('frob' => @frob)
     
     # The wrapper uses method_missing to accept any method supported by the API (now or in the future).
     # For instance, the method "flickr.activity.userPhotos" is called with the code below.
     
-    f.flickr.activity.userPhotos('timeframe' => '10d')
+    f.flickr.activity.userPhotos('timeframe' => '10d', 'auth_token' => @token)
