@@ -15,7 +15,7 @@ All method calls are automatically signed and include the authentication token.
 Installation
 ------------
 
-    sudo gem install flickr_party -s http://gemcutter.org
+    sudo gem install flickr_party -s http://gemcutter.org <= This is Tim's (seven1m) Gem
     
 Usage
 -----
