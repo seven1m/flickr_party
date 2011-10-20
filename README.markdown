@@ -20,7 +20,7 @@ require 'rubygems'
 require 'flickr_party'
 
 # get your key and secret from:
-# http://www.flickr.com/services/apps/by/timothymorgan
+# http://www.flickr.com/services/apps
 API_KEY = '...'
 SECRET = '...'
 
@@ -32,7 +32,8 @@ f.auth_url # open this in a browser for the user to confirm
 token = f.complete_auth
 
 # call any API method by calling it on the FlickrParty object directly
-# pass in the auth token if authentication is required for this call
+# pass in any needed parameters as a hash
+# pass in the auth_token if authentication is required for this call
 data = f.flickr.activity.userPhotos('timeframe' => '10d', 'auth_token' => token)
 
 # data is presented vary raw, in the "rsp" key...
