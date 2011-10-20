@@ -32,6 +32,7 @@ f.auth_url # open this in a browser for the user to confirm
 token = f.complete_auth
 
 # call any API method by calling it on the FlickrParty object directly
+# pass in the auth token if authentication is required for this call
 data = f.flickr.activity.userPhotos('timeframe' => '10d', 'auth_token' => token)
 
 # data is presented vary raw, in the "rsp" key...
