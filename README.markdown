@@ -15,7 +15,7 @@ All method calls are automatically signed and include the authentication token.
 Installation
 ------------
 
-    sudo gem install flickr_party -s http://gemcutter.org <= This is Tim's (seven1m) Gem
+    gem install flickr_party
     
 Usage
 -----
@@ -38,12 +38,11 @@ Usage
     require "highline/system_extensions"
     HighLine::SystemExtensions.get_character
     
-    # Get the frob from the previous url.
-    @frob = "my_super_awesome_frob"
-
-    @token = f.complete_auth(@frob)
+    token = f.complete_auth
     
     # The wrapper uses method_missing to accept any method supported by the API (now or in the future).
     # For instance, the method "flickr.activity.userPhotos" is called with the code below.
     
-    f.flickr.activity.userPhotos('timeframe' => '10d', 'auth_token' => @token)
+    data = f.flickr.activity.userPhotos('timeframe' => '10d', 'auth_token' => token)
+
+    data['rsp'] # => data
