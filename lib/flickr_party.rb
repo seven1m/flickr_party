@@ -2,6 +2,8 @@ require 'rubygems'
 require 'httparty'
 require 'digest/md5'
 
+require_relative 'flickr_party/photo'
+
 class FlickrParty
 
   ENDPOINT = 'http://api.flickr.com/services/rest/'
@@ -33,7 +35,14 @@ class FlickrParty
       args.sort.each{|a| args_to_s += a[0].to_s + a[1].to_s }
       sig = Digest::MD5.hexdigest(@secret.to_s + args_to_s)
       args.merge!(:api_sig => sig)
-      self.class.post(ENDPOINT, :body => args)
+      response = self.class.post(ENDPOINT, :body => args)
+      if response.has_key?('rsp') and response['rsp'].has_key?('photos') and response['rsp']['photos'].has_key?('photo')
+        photos = response['rsp']['photos']['photo']
+        photos.each_with_index do |photo_hash, index|
+          photos[index] = Photo.new(photo_hash)
+        end
+      end
+      response
     else
       if @method
         method = @method + '.' + method_name.to_s
@@ -56,18 +65,6 @@ class FlickrParty
     @token = @auth['token']
   end
 
-  def photo_url(photo_hash, size=nil)
-    if %w(m s t b).include?(size)
-      "http://farm#{photo_hash['farm']}.static.flickr.com/#{photo_hash['server']}/#{photo_hash['id']}_#{photo_hash['secret']}_#{size}.jpg"
-    elsif size == 'o' and photo_hash['originalsecret'] and photo_hash['originalformat']
-      "http://farm#{photo_hash['farm']}.static.flickr.com/#{photo_hash['server']}/#{photo_hash['id']}_#{photo_hash['originalsecret']}_#{size}.#{photo_hash['originalformat']}"
-    elsif size.nil? or size == '-'
-      "http://farm#{photo_hash['farm']}.static.flickr.com/#{photo_hash['server']}/#{photo_hash['id']}_#{photo_hash['secret']}.jpg"
-    else
-      raise PhotoURLError, "Invalid size or missing keys in photo_hash. Valid sizes are m, s, t, b, o, and nil. For original (o) size, photo_hash must contain both 'originalsecret' and 'originalformat'."
-    end
-  end
-  
   def self.stringify_hash_keys(hash)
     hash.inject({}) do |options, (key, value)|
       options[key.to_s] = value
