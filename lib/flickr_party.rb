@@ -2,67 +2,74 @@ require 'rubygems'
 require 'httparty'
 require 'digest/md5'
 
+require_relative 'flickr_party/methods'
 require_relative 'flickr_party/photo'
 
 class FlickrParty
 
   ENDPOINT = 'http://api.flickr.com/services/rest/'
-  
-  class PhotoURLError < RuntimeError; end
-  
+
+  class UnknownMethodNameError < StandardError; end
+  class PhotoURLError < StandardError; end
+
   include HTTParty
   format :xml
-  
+
   attr_accessor :token
-  
-  THIRD_LEVEL_METHODS = %w(add browse search delete create find echo login null)
-  
+
   def initialize(api_key, secret, method=nil, token=nil)
     @api_key = api_key
     @secret = secret
     @method = method
     @token = token
   end
-  
-  def method_missing(method_name, args={}, test=nil)
-    if @method.to_s.count('.') == 2 or method_name.to_s =~ /[A-Z]/ or THIRD_LEVEL_METHODS.include?(method_name.to_s)
-      args = self.class.stringify_hash_keys(args)
-      args.merge!('api_key' => @api_key, 'method' => @method + '.' + method_name.to_s)
-      if @token
-        args.merge!('auth_token' => @token)
-      end
-      args_to_s = ""
-      args.sort.each{|a| args_to_s += a[0].to_s + a[1].to_s }
-      sig = Digest::MD5.hexdigest(@secret.to_s + args_to_s)
-      args.merge!(:api_sig => sig)
-      response = self.class.post(ENDPOINT, :body => args)
-      if response.has_key?('rsp') and response['rsp'].has_key?('photos') and response['rsp']['photos'].has_key?('photo')
-        photos = response['rsp']['photos']['photo']
-        photos.each_with_index do |photo_hash, index|
-          photos[index] = Photo.new(photo_hash)
-        end
-      end
-      response
+
+  def method_missing(method_part, args={}, test=nil)
+    full_method_name = concat_method(method_part)
+    if is_full_method?(full_method_name)
+      args = merge_args(args, full_method_name)
+      post(args)
     else
-      if @method
-        method = @method + '.' + method_name.to_s
-      else
-        method = method_name.to_s
-      end
-      self.class.new(@api_key, @secret, method, @token)
+      # not an API call -- return a chainable object
+      self.class.new(@api_key, @secret, concat_method(method_part), @token)
     end
   end
-  
+
   def auth_url(perms='read', extra = nil)
-    @frob = self.flickr.auth.getFrob['rsp']['frob']
+    @frob = self.flickr.auth.getFrob['frob']
     sig = Digest::MD5.hexdigest("#{@secret}api_key#{@api_key}extra#{extra}frob#{@frob}perms#{perms}")
     "http://flickr.com/services/auth/?api_key=#{@api_key}&perms=#{perms}&frob=#{@frob}&api_sig=#{sig}&extra=#{extra}"
   end
-  
+
   def complete_auth(frob='put_your_frob_here')
     @frob ||= frob
-    @auth = self.flickr.auth.getToken('frob' => @frob)['rsp']['auth']
+    @auth = self.flickr.auth.getToken('frob' => @frob)['auth']
     @token = @auth['token']
+  end
+
+private
+
+  def post(args)
+    self.class.post(ENDPOINT, :body => args).tap do |response|
+      if response['rsp']['photos'] and response['rsp']['photos']['photo']
+        response['rsp']['photos']['photo'].map! do |photo_hash|
+          Photo.new(photo_hash)
+        end
+      end
+    end['rsp']
+  end
+
+  def merge_args(arguments, method_name)
+    self.class.stringify_hash_keys(arguments).tap do |args|
+      args.merge!('api_key' => @api_key, 'method' => method_name.to_s)
+      args.merge!('auth_token' => @token) if @token
+      args.merge!('api_sig' => arg_signature(args))
+    end
+  end
+
+  def arg_signature(args)
+    args_to_s = args.sort.inject('') { |s, (k, v)| s += k.to_s + v.to_s }
+    Digest::MD5.hexdigest(@secret.to_s + args_to_s)
   end
 
   def self.stringify_hash_keys(hash)
@@ -71,5 +78,5 @@ class FlickrParty
       options
     end
   end
-  
+
 end

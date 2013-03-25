@@ -22,5 +22,9 @@ class FlickrParty
       @hash
     end
 
+    def [](key)
+      @hash[key]
+    end
+
   end
 end

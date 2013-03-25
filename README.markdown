@@ -1,19 +1,16 @@
-Flickr Party
-============
+# Flickr Party
 
 Flickr Party is the simplest possible thing that might work for you. We build on HTTParty, and do a bit of `method_missing` magic to accept any method that the official Flickr API supports.
 
 You can also (optionally) do authenticated API calls using the `auth_url` and `complete_auth` methods (see below).
 
-Installation
-------------
+## Installation
 
 ```sh
 gem install flickr_party
 ```
-    
-Usage
------
+
+## Usage
 
 ```ruby
 require 'rubygems'
@@ -33,9 +30,17 @@ token = f.complete_auth
 
 # call any API method by calling it on the FlickrParty object directly
 # pass in any needed parameters as a hash
-# pass in the auth_token if authentication is required for this call
-data = f.flickr.activity.userPhotos('timeframe' => '10d', 'auth_token' => token)
+data = f.flickr.activity.userPhotos('timeframe' => '10d')
 
-# data is presented vary raw, in the "rsp" key...
-data['rsp'] # => data
+puts data['photos']['photo'].first.url
 ```
+
+## Copyright
+
+Copyright (c) 2013, Tim Morgan
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
