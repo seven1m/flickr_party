@@ -31,7 +31,7 @@ class FlickrParty
       post(args)
     else
       # not an API call -- return a chainable object
-      self.class.new(@api_key, @secret, concat_method(method_part), @token)
+      self.class.new(@api_key, @secret, full_method_name, @token)
     end
   end
 
