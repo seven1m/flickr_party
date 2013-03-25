@@ -32,7 +32,7 @@ token = f.complete_auth
 # pass in any needed parameters as a hash
 data = f.flickr.activity.userPhotos('timeframe' => '10d')
 
-puts data['photos']['photo'].first.url
+puts data['photos'].first.url
 ```
 
 ## Copyright

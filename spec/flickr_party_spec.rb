@@ -25,12 +25,12 @@ describe FlickrParty do
   describe 'getPublicPhotos' do
     it 'returns user photos' do
       response = subject.flickr.people.getPublicPhotos(user_id: '98624608@N00')
-      response['photos']['photo'].should be_an(Array)
+      response['photos'].should be_an(Array)
     end
 
     it 'returns a user photo object' do
       response = subject.flickr.people.getPublicPhotos(user_id: '98624608@N00')
-      photo = response['photos']['photo'].first
+      photo = response['photos'].first
       expect(photo).to be_a(FlickrParty::Photo)
     end
   end

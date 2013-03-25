@@ -4,6 +4,7 @@ require 'digest/md5'
 
 require_relative 'flickr_party/methods'
 require_relative 'flickr_party/photo'
+require_relative 'flickr_party/parser'
 
 class FlickrParty
 
@@ -14,6 +15,7 @@ class FlickrParty
 
   include HTTParty
   format :xml
+  parser FlickrParser
 
   attr_accessor :token
 
@@ -51,12 +53,12 @@ private
 
   def post(args)
     self.class.post(ENDPOINT, :body => args).tap do |response|
-      if response['rsp']['photos'] and response['rsp']['photos']['photo']
-        response['rsp']['photos']['photo'].map! do |photo_hash|
+      if response['photos']
+        response['photos'].map! do |photo_hash|
           Photo.new(photo_hash)
         end
       end
-    end['rsp']
+    end
   end
 
   def merge_args(arguments, method_name)
