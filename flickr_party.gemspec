@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "flickr_party"
-  s.version = "0.3.0"
+  s.version = "0.3.1"
   s.author = "Tim Morgan"
   s.email = "tim@timmorgan.org"
   s.homepage = "http://github.com/seven1m/flickr_party"
