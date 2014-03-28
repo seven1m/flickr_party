@@ -53,10 +53,12 @@ private
 
   def post(args)
     self.class.post(ENDPOINT, :body => args).tap do |response|
-      if response['photos']
+      if Array === response['photos']
         response['photos'].map! do |photo_hash|
           Photo.new(photo_hash)
         end
+      elsif Hash === response['photos']
+        Photo.new(response['photos'])
       end
     end
   end
