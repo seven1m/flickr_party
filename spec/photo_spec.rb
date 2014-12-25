@@ -28,7 +28,7 @@ describe FlickrParty::Photo do
   end
 
   it 'has a url' do
-    expect(subject.url).to eq('http://farm9.static.flickr.com/8516/8545757071_1dc18b8a5a.jpg')
+    expect(subject.url).to eq('https://farm9.static.flickr.com/8516/8545757071_1dc18b8a5a.jpg')
   end
 
 end
