@@ -40,7 +40,7 @@ class FlickrParty
   def auth_url(perms='read', extra = nil)
     @frob = self.flickr.auth.getFrob['frob']
     sig = Digest::MD5.hexdigest("#{@secret}api_key#{@api_key}extra#{extra}frob#{@frob}perms#{perms}")
-    "http://flickr.com/services/auth/?api_key=#{@api_key}&perms=#{perms}&frob=#{@frob}&api_sig=#{sig}&extra=#{extra}"
+    "https://flickr.com/services/auth/?api_key=#{@api_key}&perms=#{perms}&frob=#{@frob}&api_sig=#{sig}&extra=#{extra}"
   end
 
   def complete_auth(frob='put_your_frob_here')
